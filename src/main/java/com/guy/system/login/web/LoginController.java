@@ -1,8 +1,7 @@
 package com.guy.system.login.web;
 
 import com.google.common.collect.Maps;
-import com.guy.common.servlet.ValidateCodeServlet;
-import com.guy.common.utils.IdGen;
+import com.guy.common.utils.Global;
 import com.guy.common.utils.StringUtils;
 import com.guy.common.web.BaseController;
 import com.guy.system.security.FormAuthenticationFilter;
@@ -32,7 +31,7 @@ import java.util.Map;
 @Controller
 @RequestMapping(value = "{adminPath}")
 public class LoginController extends BaseController{
-	
+
 	/**
 	 * 是否是验证码登录
 	 * @param useruame 用户名
@@ -67,6 +66,7 @@ public class LoginController extends BaseController{
 	 */
 	@RequestMapping(value="login",method = RequestMethod.GET)
 	public String login(HttpServletRequest request) {
+        request.getSession().setAttribute("projectName", Global.getConfig("projectName"));
 		Subject subject = SecurityUtils.getSubject();
 		if(subject.isAuthenticated()){
 			return "system/index";
