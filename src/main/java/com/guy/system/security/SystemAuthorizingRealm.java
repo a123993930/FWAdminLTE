@@ -71,33 +71,12 @@ public class SystemAuthorizingRealm extends AuthorizingRealm {
 
         if (user != null&&doCaptchaValidate(token)) {
             byte[] salt = com.guy.common.utils.security.Encodes.decodeHex(user.getSalt());
-//            UserRealm.ShiroUser shiroUser=new UserRealm.ShiroUser(user.getId(), user.getLoginName(), user.getName(),token.getHost());
             //设置用户session
             Session session =SecurityUtils.getSubject().getSession();
             session.setAttribute("user", user);
-            //读取websocket配置
-            String fileName= "/websocket.properties";
-            PropertiesLoader loader= new PropertiesLoader(fileName);
-            session.setAttribute("WIMIP",  loader.getProperty("WIMIP"));
-            session.setAttribute("WIMPORT",  loader.getProperty("WIMPORT"));
-            session.setAttribute("OLIP",  loader.getProperty("OLIP"));
-            session.setAttribute("OLPORT",  loader.getProperty("OLPORT"));
-            //ckfinder 添加权限
-            //start
-            Set<UserRole> userRoles=user.getUserRoles();
-            for(UserRole userRole:userRoles){
-                String roleName=userRole.getRole().getName();
-                if(roleName.equals("admin")){
-                    session.setAttribute("CKFinder_UserRole", "admin");
-                }else{
-                    session.setAttribute("CKFinder_UserRole", "user");
-                }
-            }
-            //end
             user.setLoginIP(token.getHost());
             //设置登录次数、时间
             userService.updateUserLogin(user);
-            //ckfinder 添加权限
             return new SimpleAuthenticationInfo(new Principal(user),user.getPassword(), ByteSource.Util.bytes(salt), getName());
         } else {
             return null;
