@@ -16,10 +16,12 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -66,7 +68,11 @@ public class LoginController extends BaseController{
 	@RequestMapping(value="login",method = RequestMethod.GET)
 	public String login(HttpServletRequest request) {
 		Subject subject = SecurityUtils.getSubject();
-		return "system/login";
+		if(subject.isAuthenticated()){
+			return "system/index";
+		}else{
+			return "system/login";
+		}
 	}
 
 	/**
@@ -77,7 +83,8 @@ public class LoginController extends BaseController{
 	 * @throws IOException
 	 */
 	@RequestMapping(value="login",method = RequestMethod.POST)
-	public String fail(@RequestParam(FormAuthenticationFilter.DEFAULT_USERNAME_PARAM) String userName, Model model, HttpServletRequest request, HttpServletResponse response) throws IOException {
+	@ResponseBody
+	public Map<String, Object> fail(@RequestParam(FormAuthenticationFilter.DEFAULT_USERNAME_PARAM) String userName, Model model, HttpServletRequest request, HttpServletResponse response) throws IOException {
 		String exception = (String)request.getAttribute(FormAuthenticationFilter.DEFAULT_ERROR_KEY_ATTRIBUTE_NAME);
 		String message = (String)request.getAttribute(FormAuthenticationFilter.DEFAULT_MESSAGE_PARAM);
 		boolean mobile = WebUtils.isTrue(request, FormAuthenticationFilter.DEFAULT_MOBILE_PARAM);
@@ -85,22 +92,26 @@ public class LoginController extends BaseController{
 		if (StringUtils.isBlank(message) || StringUtils.equals(message, "null")){
 			message = "用户或密码错误, 请重试.";
 		}
-		model.addAttribute(FormAuthenticationFilter.DEFAULT_USERNAME_PARAM, userName);
-		model.addAttribute(FormAuthenticationFilter.DEFAULT_MOBILE_PARAM, mobile);
-		model.addAttribute(FormAuthenticationFilter.DEFAULT_ERROR_KEY_ATTRIBUTE_NAME, exception);
-		model.addAttribute(FormAuthenticationFilter.DEFAULT_MESSAGE_PARAM, message);
-
+//		model.addAttribute(FormAuthenticationFilter.DEFAULT_USERNAME_PARAM, userName);
+//		model.addAttribute(FormAuthenticationFilter.DEFAULT_MOBILE_PARAM, mobile);
+//		model.addAttribute(FormAuthenticationFilter.DEFAULT_ERROR_KEY_ATTRIBUTE_NAME, exception);
+//		model.addAttribute(FormAuthenticationFilter.DEFAULT_MESSAGE_PARAM, message);
+		Map<String, Object> map = new HashMap<String, Object>();
+		map.put("message",message);
+		map.put("success",false);
 		// 非授权异常，登录失败，验证码加1。
 		if (!UnauthorizedException.class.getName().equals(exception)){
-			model.addAttribute("isValidateCodeLogin", isValidateCodeLogin(userName, true, false));
+			map.put("isValidateCodeLogin", isValidateCodeLogin(userName, true, false));
+//			model.addAttribute("isValidateCodeLogin", isValidateCodeLogin(userName, true, false));
 		}
 
-		// 验证失败清空验证码
-		request.getSession().setAttribute(ValidateCodeServlet.VALIDATE_CODE, IdGen.uuid());
-		if (mobile){
-			return renderString(response, model);
-		}
-		return "system/login";
+//
+//		// 验证失败清空验证码
+//		request.getSession().setAttribute(ValidateCodeServlet.VALIDATE_CODE, IdGen.uuid());
+//		if (mobile){
+//			return renderString(response, model);
+//		}
+		return map;
 	}
 
 	/**
