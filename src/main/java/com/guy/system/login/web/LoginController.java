@@ -4,12 +4,15 @@ import com.google.common.collect.Maps;
 import com.guy.common.utils.Global;
 import com.guy.common.utils.StringUtils;
 import com.guy.common.web.BaseController;
+import com.guy.system.permission.entity.Permission;
+import com.guy.system.permission.service.PermissionService;
 import com.guy.system.security.FormAuthenticationFilter;
 import com.guy.util.CacheUtils;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.UnauthorizedException;
 import org.apache.shiro.subject.Subject;
 import org.apache.shiro.web.util.WebUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -21,6 +24,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -32,6 +36,8 @@ import java.util.Map;
 @RequestMapping(value = "{adminPath}")
 public class LoginController extends BaseController{
 
+	@Autowired
+	PermissionService permissionService;
 	/**
 	 * 是否是验证码登录
 	 * @param useruame 用户名

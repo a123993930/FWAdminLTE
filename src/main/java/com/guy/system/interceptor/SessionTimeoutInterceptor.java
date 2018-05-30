@@ -4,11 +4,16 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.guy.common.utils.StringUtils;
+import com.guy.system.permission.entity.Permission;
+import com.guy.system.permission.service.PermissionService;
+import com.guy.util.SpringContextHolder;
 import com.guy.util.UserAgentUtils;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.guy.system.user.entity.User;
+
+import java.util.List;
 
 /** 
  * 处理session超时的拦截器 
@@ -40,6 +45,10 @@ public class SessionTimeoutInterceptor  implements HandlerInterceptor{
 //        	request.getRequestDispatcher("/WEB-INF/views/system/login.jsp").forward(request, response);
 //        	return  true;
 //        }
+
+
+        List<Permission> permissionList = SpringContextHolder.getBean(PermissionService.class).getMenus();
+        request.getSession().setAttribute("perMenu",permissionList);
         return true;
     }  
       
