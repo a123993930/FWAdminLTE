@@ -77,7 +77,7 @@ public class UserController extends BaseController {
             filters.add(filterUserID);
         }
         page = userService.search(page, filters);
-        return getEasyUIData(page);
+        return getAdminLTEUIData(page);
     }
 
     /**

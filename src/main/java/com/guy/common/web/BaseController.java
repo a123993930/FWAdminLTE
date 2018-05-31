@@ -96,6 +96,18 @@ public class BaseController {
 		map.put("total", page.getTotalCount());
 		return map;
 	}
+	/**
+	 * 获取adminLTE分页数据
+	 * @param page
+	 * @return map对象
+	 */
+	public <T> Map<String, Object> getAdminLTEUIData(Page<T> page){
+		Map<String, Object> map = new HashMap<String, Object>();
+		map.put("data", page.getResult());
+		map.put("recordsTotal", page.getTotalCount());
+		map.put("recordsFiltered", page.getTotalCount());
+		return map;
+	}
 	
 	/**
 	 * 用来获取当前登录用户
